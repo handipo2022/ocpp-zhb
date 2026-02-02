@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Charge Configuration</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="./script.js"></script>
+  </head>
+  <body>
+    <div class="topnav">
+      <a class="active" href="./index.html">CP Data</a>
+      <a href="./connector.html">Connector Status</a>    
+      <a href="./ChangeConfig.html">Change Config</a>
+      <a href="./GetConfig.html">Get Config</a>
+      <a href="./About.html">About</a>
+    </div>
+    <h2>Change Configuration</h2>
+
+    <div class="container">
+      <label>AllowOfflineTxForUnknownId</label>
+      <select name="AllowOfflineTxForUnknownId" id="AllowOfflineTxForUnknownId">
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label>AuthorizationCacheEnabled</label>
+      <select name="AuthorizationCacheEnabled" id="AuthorizationCacheEnabled">
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label>AuthorizeRemoteTxRequests</label>
+      <select name="AuthorizeRemoteTxRequests" id="AuthorizeRemoteTxRequests">
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label>BlinkRepeat</label>
+      <input id="BlinkRepeat" type="text" />
+      <label>ClockAlignedDataInterval</label>
+      <input id="ClockAlignedDataInterval" type="text" />
+      <label>ConnectionTimeOut</label>
+      <input id="ConnectionTimeOut" type="text" />
+      <label>HeartbeatInterval</label>
+      <input id="HeartbeatInterval" type="text" />
+      <label>LightIntensity</label>
+      <input id="LightIntensity" type="text" />
+      <label>LocalAuthListEnabled</label>
+      <select name="LocalAuthListEnabled" id="LocalAuthListEnabled">
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label>LocalAuthorizeOffline</label>
+      <select name="LocalAuthorizeOffline" id="LocalAuthorizeOffline">
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label>LocalPreAuthorize</label>
+      <select name="LocalPreAuthorize" id="LocalPreAuthorize">
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label>MaxEnergyOnInvalidId</label>
+      <input id="MaxEnergyOnInvalidId" type="text" />
+      <label>MeterValuesAlignedData</label>
+      <input id="MeterValuesAlignedData" type="text" />
+      <label>MeterValuesSampledData</label>
+      <input id="MeterValuesSampledData" type="text" />
+      <label>MeterValueSampleInterval</label>
+      <input id="MeterValueSampleInterval" type="text" />
+      <label>MinimumStatusDuration</label>
+      <input id="MinimumStatusDuration" type="text" />
+      <label>ResetRetries</label>
+      <input id="ResetRetries" type="text" />
+      <label>ConnectorPhaseRotation</label>
+      <input id="ConnectorPhaseRotation" type="text" />
+      <label>StopTransactionOnEVSideDisconnect</label>
+      <select
+        name="StopTransactionOnEVSideDisconnect"
+        id="StopTransactionOnEVSideDisconnect"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label>StopTransactionOnInvalidId</label>
+      <select name="StopTransactionOnInvalidId" id="StopTransactionOnInvalidId">
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label>StopTxnAlignedData</label>
+      <input id="StopTxnAlignedData" type="text" />
+      <label>StopTxnSampledData</label>
+      <input id="StopTxnSampledData" type="text" />
+      <label>TransactionMessageAttempts</label>
+      <input id="TransactionMessageAttempts" type="text" />
+      <label>TransactionMessageRetryInterval</label>
+      <input id="TransactionMessageRetryInterval" type="text" />
+      <label>UnlockConnectorOnEVSideDisconnect</label>
+      <select
+        name="UnlockConnectorOnEVSideDisconnect"
+        id="UnlockConnectorOnEVSideDisconnect"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label>WebSocketPingInterval</label>
+      <input id="WebSocketPingInterval" type="text" />
+      <label>Saved IdToken</label>
+      <input id="savedIdToken" type="text" />
+      <label>Last Tag IdToken</label>
+      <input id="lastTagIdToken" type="text" />
+    </div>
+
+    <div class="btncontainer">
+      <button id="changeconfig" onclick="ChangeConfiguration()">
+        Save CP Config</button
+      ><br />
+      <button id="readconfig" onclick="ReadConfiguration()">
+        Read CP Config</button
+      ><br />
+    </div>
+
+    <div>
+      <p id="display1"></p>
+      <br /><br />
+      <p id="display2"></p>
+      <br /><br />
+    </div>
+  </body>
+</html>

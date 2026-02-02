@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get Configuration</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="./script.js"></script>
+  </head>
+  <body>
+    <div class="topnav">
+      <a class="active" href="./index.html">CP Data</a>
+      <a href="./ChangeConfig.html">Change Config</a>
+      <a href="./GetConfig.html">Get Config</a>
+      <a href="./About.html">About</a>
+    </div>
+    <h2>Get Configuration</h2>
+
+    <div class="container">
+      <label>GetConfigurationMaxKeys</label>
+      <input id="GetConfigurationMaxKeys" type="text" />
+      <label>MeterValuesAlignedDataMaxLength</label>
+      <input id="MeterValuesAlignedDataMaxLength" type="text" />
+
+      <label>MeterValuesSampledDataMaxLength</label>
+      <input id="MeterValuesSampledDataMaxLength" type="text" />
+      <label>NumberOfConnectors</label>
+      <input id="NumberOfConnectors" type="text" />
+      <label>ConnectorPhaseRotationMaxLength</label>
+      <input id="ConnectorPhaseRotationMaxLength" type="text" />
+      <label>StopTxnAlignedDataMaxLength</label>
+      <input id="StopTxnAlignedDataMaxLength" type="text" />
+      <label>StopTxnSampledDataMaxLength</label>
+      <input id="StopTxnSampledDataMaxLength" type="text" />
+      <label>SupportedFeatureProfilesMaxLength</label>
+      <input id="SupportedFeatureProfilesMaxLength" type="text" />
+      <label>LocalAuthListMaxLength</label>
+      <input id="LocalAuthListMaxLength" type="text" />
+      <label>SendLocalListMaxLength</label>
+      <input id="SendLocalListMaxLength" type="text" />
+      <label>ReserveConnectorZeroSupported</label>
+      <input id="ReserveConnectorZeroSupported" type="text" />
+      <label>ChargeProfileMaxStackLevel</label>
+      <input id="ChargeProfileMaxStackLevel" type="text" />
+      <label>ChargingScheduleAllowedChargingRateUnit</label>
+      <input id="ChargingScheduleAllowedChargingRateUnit" type="text" />
+      <label>ChargingScheduleMaxPeriods</label>
+      <input id="ChargingScheduleMaxPeriods" type="text" />
+      <label>ConnectorSwitch3to1PhaseSupported</label>
+      <input id="ConnectorSwitch3to1PhaseSupported" type="text" />
+      <label>MaxChargingProfilesInstalled</label>
+      <input id="MaxChargingProfilesInstalled" type="text" />
+    </div>
+
+    <div class="btncontainer">
+     
+      <button id="getconfig" onclick="GetConfiguration()">Get CP Config</button><br />
+    </div>
+
+    <div>
+      <p id="display1"></p>
+      <br /><br />
+      <p id="display2"></p>
+      <br /><br />
+    </div>
+  </body>
+</html>

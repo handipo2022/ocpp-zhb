@@ -1,0 +1,29 @@
+{
+  "name": "splu_bd_riset",
+  "version": "1.0.0",
+  "description": "splu by b&d",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "handipo",
+  "license": "ISC",
+  "dependencies": {
+    "basic-ftp": "^5.0.3",
+    "body-parser": "^2.2.2",
+    "bootstrap": "^5.3.8",
+    "check-internet-connected": "^2.0.6",
+    "express": "^4.18.2",
+    "is-online": "^10.0.0",
+    "modbus-serial": "^8.0.13",
+    "mysql": "^2.18.1",
+    "nodemon": "^3.1.11",
+    "serialport": "^12.0.0",
+    "sessionstorage": "^0.1.0",
+    "sessionstorage-for-nodejs": "^1.0.2",
+    "sqlite3": "^5.1.7",
+    "websocket": "^1.0.34",
+    "ws": "^8.19.0"
+  }
+}
