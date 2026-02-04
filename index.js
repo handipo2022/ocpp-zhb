@@ -1,5 +1,6 @@
 const express = require("express");
 const dbase = require("./dbclient.js");
+const ocppClient = require("./ocppclient.js");
 
 const app = express();
 const port = 3000;
@@ -26,10 +27,18 @@ const ocpp = `CREATE TABLE IF NOT EXISTS ocpp (
       chargerid TEXT,
       numgun TEXT      
     )`;
+const connector = `CREATE TABLE IF NOT EXISTS connector (     
+      id INTEGER PRIMARY KEY,
+      connectorId INTEGER,
+      status TEXT,
+      errorCode TEXT      
+    )`;
 
 const db = dbase.connect(name); //connect dbase
 dbase.create(db, chargerdata); //create table 'chargerdata'
 dbase.create(db, ocpp); //create table 'ocpp'
+dbase.create(db, connector); //create table 'connector'
+ocppClient.main();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -141,8 +150,25 @@ app.post("/ocpp/savedata", async (req, res) => {
   `;
 
     const values = [url, chargerid, numgun];
-
     dbase.insert(db, sql, values);
+
+    // Delete all existing connectors
+    const deleteSql = `DELETE FROM connector`;
+    await dbase.run(db, deleteSql);
+    //renew connector
+    for (let j = 1; j <= numgun; j++) {
+      const sql1 = `
+        INSERT INTO connector (
+          id,  
+          connectorId,
+          status,
+          errorCode      
+        ) VALUES (?, ?, ?, ?)
+      `;
+      const values1 = [j, j, "Available", "NoError"];
+      await dbase.insert(db, sql1, values1);
+    }
+
     res.status(200).send();
   } catch (err) {
     console.log(err);

@@ -40,5 +40,15 @@ const read = (db, sql, params, callback) => {
     }
   });
 };
+//delete 
+const run = (db, sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) reject(err);
+      else resolve(this.changes); // number of rows affected
+    });
+  });
+};
 
-module.exports = { connect, create, insert,read };
+
+module.exports = { connect, create, insert,read,run };

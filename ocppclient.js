@@ -1,16 +1,66 @@
 const WebSocketClient = require("websocket").client; //import websocket module
 const chargerDb = require("./dbclient.js");
+const name = "./charger.db";
 
-const url = "ws://127.0.0.1:8080/steve/websocket/CentralSystemService/";
-const id = "BDTEST1";
-const protocol = ["ocpp1.6", "ocpp1.6j"];
 const possible =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+let row, row1, BootNotification_payload, StatusNotification_payload;
+const protocol = ["ocpp1.6", "ocpp1.6j"];
 
 let interval;
 let intervalId;
 
 const pendingRequests = {}; //{uniqueId : action}
+
+//connect dbase
+const db = chargerDb.connect(name);
+
+//read database ,pass as payload in ocpp message
+const readData = async (sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    chargerDb.read(db, sql, params, (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  });
+};
+
+const BootNotificationPayload = async () => {
+  row = await readData(`SELECT * FROM chargerdata WHERE id = ?`, [1]);
+  return {
+    chargeBoxSerialNumber: row.chargeBoxSerialNumber,
+    chargePointVendor: row.chargePointVendor,
+    chargePointModel: row.chargePointModel,
+    chargePointSerialNumber: row.chargePointSerialNumber,
+    firmwareVersion: row.firmwareVersion,
+    iccid: row.iccid,
+    imsi: row.imsi,
+    meterSerialNumber: row.meterSerialNumber,
+    meterType: row.meterType,
+  };
+};
+
+const StatusNotificationPayload = async () => {
+  //get number of gun
+  row = await readData(`SELECT numgun FROM ocpp WHERE id = ?`, [1]);
+
+  //get all connector data
+  let array = [];
+  row1 = await readData(`SELECT * FROM connector`);
+  for (let j = 1; j <= row.numgun; j++) {
+    array.push({
+      connectorId: row1.connectorId,
+      status: row1.status,
+      errorCode: row1.errorCode,
+      timestamp: new Date().toISOString(),
+    });
+  }
+  return array;
+};
 
 const generateRandomString = () => {
   let randomString = "";
@@ -22,27 +72,6 @@ const generateRandomString = () => {
   return randomString;
 };
 
-//----------------------------------------------
-//Payloads
-//-----------------------------------------------
-const BootNotification_payload = {
-  chargePointVendor: "MyVendor",
-  chargePointModel: "MyModel",
-  chargePointSerialNumber: "SN123456",
-  firmwareVersion: "1.0.0",
-  iccid: "1234567890",
-  imsi: "9876543210",
-  meterSerialNumber: "MTR123456",
-  meterType: "SmartMeter",
-};
-const Heartbeat_payload = {};
-
-const StatusNotification_payload = {
-  connectorId: 1,
-  status: "Available",
-  errorCode: "NoError",
-  timestamp: new Date().toISOString(),
-};
 //------------------------------------------------
 
 //connect to ocpp server
@@ -78,16 +107,15 @@ const handleResponse = (connection, action, payload) => {
           clearInterval(intervalId);
         }
         interval = payload.interval || 10;
-        sendOCPPMsg(
-          connection,
-          "StatusNotification",
-          StatusNotification_payload
-        );
+        StatusNotification_payload.forEach((element) => {
+          sendOCPPMsg(connection, "StatusNotification", element);
+        });
       } else if (
         payload.status === "Pending" ||
         payload.status === "Rejected"
       ) {
         interval = payload.interval || 10;
+
         intervalId = setInterval(
           () =>
             sendOCPPMsg(
@@ -102,7 +130,7 @@ const handleResponse = (connection, action, payload) => {
 
     case "StatusNotification":
       setInterval(
-        () => sendOCPPMsg(connection, "Heartbeat", Heartbeat_payload),
+        () => sendOCPPMsg(connection, "Heartbeat", {}),
         interval * 1000
       );
       break;
@@ -112,7 +140,8 @@ const handleResponse = (connection, action, payload) => {
 //main function
 const main = async () => {
   try {
-    const connection = await connectWS(url, id, protocol);
+    row = await readData(`SELECT * FROM ocpp WHERE id = ?`, [1]);
+    const connection = await connectWS(row.url, row.chargerid, protocol);
     console.log("Connected to websocket");
 
     connection.on("error", (error) => {
@@ -148,28 +177,12 @@ const main = async () => {
         }
       }
     });
-
+    BootNotification_payload = await BootNotificationPayload();
     sendOCPPMsg(connection, "BootNotification", BootNotification_payload);
+    StatusNotification_payload = await StatusNotificationPayload();
   } catch (err) {
     console.log(err);
   }
 };
 
-const dbase = chargerDb.runDb();
-const sql = `
-    INSERT INTO BootNotification 
-    (chargePointVendor, chargePointModel, chargePointSerialNumber, firmwareVersion, iccid, imsi, meterSerialNumber, meterType) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-const data = {
-  chargePointVendor: "XYZ",
-  chargePointModel: "Model XXYZ1",
-  chargePointSerialNumber: "SN1234567890",
-  firmwareVersion: "0.0.1",
-  iccid: "1234",
-  imsi: "987654321",
-  meterSerialNumber: "Meter123456789",
-  meterType: "Meter type 1",
-};
-chargerDb.insertData(dbase, sql, data);
-main();
+module.exports = { connectWS, sendOCPPMsg, handleResponse, readData, main };
