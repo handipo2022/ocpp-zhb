@@ -34,10 +34,44 @@ const connector = `CREATE TABLE IF NOT EXISTS connector (
       errorCode TEXT      
     )`;
 
+const configuration = `CREATE TABLE IF NOT EXISTS configuration (     
+      id INTEGER PRIMARY KEY,
+      AllowOfflineTxForUnknownId BOOLEAN,
+      AuthorizationCacheEnabled BOOLEAN,
+      AuthorizeRemoteTxRequests BOOLEAN,
+      BlinkRepeat INTEGER,
+      ClockAlignedDataInterval INTEGER,
+      ConnectionTimeOut INTEGER,
+      GetConfigurationMaxKeys INTEGER,
+      HeartbeatInterval INTEGER,
+      LightIntensity INTEGER,
+      LocalAuthorizeOffline BOOLEAN,
+      LocalPreAuthorize BOOLEAN,
+      MaxEnergyOnInvalidId INTEGER,
+      MeterValuesAlignedData TEXT,
+      MeterValuesSampledData TEXT,
+      MeterValueSampleInterval INTEGER,
+      MinimumStatusDuration INTEGER,
+      NumberOfConnectors INTEGER,
+      ResetRetries INTEGER,
+      ConnectorPhaseRotation TEXT,
+      StopTransactionOnEVSideDisconnect BOOLEAN,
+      StopTransactionOnInvalidId BOOLEAN,
+      StopTxnAlignedData TEXT,
+      StopTxnSampledData TEXT,
+      SupportedFeatureProfiles TEXT, 
+      TransactionMessageAttempts INTEGER,
+      TransactionMessageRetryInterval INTEGER,
+      UnlockConnectorOnEVSideDisconnect BOOLEAN,
+      WebSocketPingInterval INTEGER
+    )`;
+
 const db = dbase.connect(name); //connect dbase
 dbase.create(db, chargerdata); //create table 'chargerdata'
 dbase.create(db, ocpp); //create table 'ocpp'
 dbase.create(db, connector); //create table 'connector'
+dbase.create(db, configuration); //create table 'configuration'
+
 ocppClient.main();
 
 app.use(express.json());

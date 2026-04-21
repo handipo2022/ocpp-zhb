@@ -11,28 +11,27 @@
 
 //==============================================================
 // create an empty modbus client ACREL ADF400L (MULTI NODE KWH METER)
-const ModbusRTU   = require ("modbus-serial");
-const client      = new ModbusRTU();
-const portRTU     = "COM3";
+const ModbusRTU = require("modbus-serial");
+const client = new ModbusRTU();
+const portRTU = "COM9";
 
-
-let mbsStatus   = "Initializing...";    // holds a status of Modbus
+let mbsStatus = "Initializing..."; // holds a status of Modbus
 
 // Modbus 'state' constants
-const MBS_STATE_INIT          = "State init";
-const MBS_STATE_IDLE          = "State idle";
-const MBS_STATE_NEXT          = "State next";
-const MBS_STATE_GOOD_READ     = "State good (read)";
-const MBS_STATE_FAIL_READ     = "State fail (read)";
-const MBS_STATE_GOOD_CONNECT  = "State good (port)";
-const MBS_STATE_FAIL_CONNECT  = "State fail (port)";
+const MBS_STATE_INIT = "State init";
+const MBS_STATE_IDLE = "State idle";
+const MBS_STATE_NEXT = "State next";
+const MBS_STATE_GOOD_READ = "State good (read)";
+const MBS_STATE_FAIL_READ = "State fail (read)";
+const MBS_STATE_GOOD_CONNECT = "State good (port)";
+const MBS_STATE_FAIL_CONNECT = "State fail (port)";
 
 // Modbus configuration values
-const mbsId       = 7;
-const mbsScan     = 10000;
-const mbsTimeout  = 10000;
-let mbsState    = MBS_STATE_INIT;
-let resnum ;
+const mbsId = 7;
+const mbsScan = 10000;
+const mbsTimeout = 10000;
+let mbsState = MBS_STATE_INIT;
+let resnum;
 let num;
 let voltage;
 let current;
@@ -40,220 +39,288 @@ let power;
 let pf;
 let freq;
 let energy;
-let ctratio=4;
+let ctratio = 4;
 // Upon SerialPort error
-client.on("error", function(error) {
-    console.log("SerialPort Error: ", error);
+client.on("error", function (error) {
+  console.log("SerialPort Error: ", error);
 });
 
-
-
+const addrArray = [
+  { addr: 0x033f, unit: "Voltage", phase: "A" },
+  { addr: 0x0340, unit: "Voltage", phase: "B" },
+  { addr: 0x0341, unit: "Voltage", phase: "C" },
+  { addr: 0x0342, unit: "Current", phase: "A" },
+  { addr: 0x0343, unit: "Current", phase: "B" },
+  { addr: 0x0344, unit: "Current", phase: "C" },
+  { addr: 0x0346, unit: "ActivePower", phase: "A" },
+  { addr: 0x0347, unit: "ActivePower", phase: "B" },
+  { addr: 0x0348, unit: "ActivePower", phase: "C" },
+  { addr: 0x034e, unit: "PowerFactor", phase: "A" },
+  { addr: 0x034f, unit: "PowerFactor", phase: "B" },
+  { addr: 0x0350, unit: "PowerFactor", phase: "C" },
+  { addr: 0x0352, unit: "Energy", phase: "A" },
+  { addr: 0x0354, unit: "Energy", phase: "B" },
+  { addr: 0x0356, unit: "Energy", phase: "C" },
+  { addr: 0x0351, unit: "Frequency", phase: "" },
+];
 //==============================================================
-const connectClient = function()
-{
-    // set requests parameters
-    client.setID      (mbsId);
-    client.setTimeout (mbsTimeout);
+const connectClient = function () {
+  // set requests parameters
+  client.setID(mbsId);
+  client.setTimeout(mbsTimeout);
 
-    // try to connect
-    client.connectRTUBuffered (`${portRTU}`, { baudRate: 9600, parity: "none", dataBits: 8, stopBits: 1 })
-        .then(function()
-        {
-            mbsState  = MBS_STATE_GOOD_CONNECT;
-            mbsStatus = "Connected, wait for reading...";
-            console.log(mbsStatus);
-        })
-        .catch(function(e)
-        {
-            mbsState  = MBS_STATE_FAIL_CONNECT;
-            mbsStatus = e.message;
-            console.log(e);
-        });
+  // try to connect
+  client
+    .connectRTUBuffered(`${portRTU}`, {
+      baudRate: 9600,
+      parity: "none",
+      dataBits: 8,
+      stopBits: 1,
+    })
+    .then(function () {
+      mbsState = MBS_STATE_GOOD_CONNECT;
+      mbsStatus = "Connected, wait for reading...";
+      console.log(mbsStatus);
+    })
+    .catch(function (e) {
+      mbsState = MBS_STATE_FAIL_CONNECT;
+      mbsStatus = e.message;
+      console.log(e);
+    });
 };
 
-
-//==============================================================
-const readModbusData = function()
-{
-    // try to read data
-    setTimeout(() => {
-        client.readHoldingRegisters (0x033f, 2)//voltage
-        .then(function(data)
-        {
-            mbsState   = MBS_STATE_GOOD_READ;
-            mbsStatus  = "success";
-            let tempnum = data.data[0] + data.data[1];
+const readRegister = (addr, unit, phase) => {
+  let tempnum;
+  let voltage, current, power, pf, freq, energy;
+  client
+    .readHoldingRegisters(addr, 2) //voltage
+    .then(function (data) {
+      mbsState = MBS_STATE_GOOD_READ;
+      mbsStatus = "success";
+      switch (unit) {
+        case "Voltage":
+          {
+            tempnum = data.data[0] + data.data[1];
             voltage = convertNumber(tempnum);
-            voltage=voltage/10;
-            console.log("Voltage : " + voltage.toLocaleString() + " Volt");
-            tempnum=0;
-        })
-        .catch(function(e)
-        {
-            mbsState  = MBS_STATE_FAIL_READ;
-            mbsStatus = e.message;
-            console.log(e);
-        });    
-    }, 200);
-    setTimeout(() => {
-        client.readHoldingRegisters (0x0342, 2)//current
-        .then(function(data)
-        {
-            mbsState   = MBS_STATE_GOOD_READ;
-            mbsStatus  = "success";
-          //  console.log(data.data);
-            let tempnum = data.data[0] + data.data[1];
-            current = (convertNumber(tempnum) * ctratio)/100;
-            console.log("Current : " + current.toLocaleString() + " A");
-          
-        })
-        .catch(function(e)
-        {
-            mbsState  = MBS_STATE_FAIL_READ;
-            mbsStatus = e.message;
-            console.log(e);
-        });    
-    }, 1000);
-    setTimeout(() => {
-        client.readHoldingRegisters (0x0346, 2)//active power
-        .then(function(data)
-        {
-            mbsState   = MBS_STATE_GOOD_READ;
-            mbsStatus  = "success";
-            //console.log(data.data);
-          let tempnum= data.data[0] + data.data[1];
+            voltage = voltage / 10;
+            console.log(`V-${phase} =  ${voltage.toLocaleString()} V`);
+            tempnum = 0;
+          }
+          break;
+        case "Current":
+          {
+            tempnum = data.data[0] + data.data[1];
+            current = (convertNumber(tempnum) * ctratio) / 100;
+            console.log(`I-${phase} : ${current.toLocaleString()} A`);
+            tempnum = 0;
+          }
+          break;
+        case "ActivePower":
+          {
+            tempnum = data.data[0] + data.data[1];
 
-            power = (convertNumber(tempnum) * ctratio)/1000;
-            console.log("Active power : " + power.toLocaleString() + " kW");
-        
-        })
-        .catch(function(e)
-        {
-            mbsState  = MBS_STATE_FAIL_READ;
-            mbsStatus = e.message;
-            console.log(e);
-        });    
-    }, 2000);
-    setTimeout(() => {
-        client.readHoldingRegisters (0x034e, 2)//power factor
-        .then(function(data)
-        {
-            mbsState   = MBS_STATE_GOOD_READ;
-            mbsStatus  = "success";
-            //console.log(data.data);
-            let tempnum = data.data[0];
-            pf=convertNumber(tempnum)/1000;
-            console.log("Power factor : " + pf.toLocaleString());
-            
-        
-        })
-        .catch(function(e)
-        {
-            mbsState  = MBS_STATE_FAIL_READ;
-            mbsStatus = e.message;
-            console.log(e);
-        });    
-    }, 3000);
-    setTimeout(() => {
-        client.readHoldingRegisters (0x0352, 4)//active energy
-        .then(function(data)
-        {
-            mbsState   = MBS_STATE_GOOD_READ;
-            mbsStatus  = "success";
-            let tempnum = data.data[0] + data.data[1] + data.data[2] + data.data[3];
-             energy=(convertNumber(tempnum) * ctratio) / 100;
-            console.log("Active Energy : "  + energy.toLocaleString() + " kwh");
-          
-        
-        })
-        .catch(function(e)
-        {
-            mbsState  = MBS_STATE_FAIL_READ;
-            mbsStatus = e.message;
-            console.log(e);
-        });    
-    }, 4000);
-    setTimeout(() => {
-        client.readHoldingRegisters (0x0351, 1)//frequency
-        .then(function(data)
-        {
-            mbsState   = MBS_STATE_GOOD_READ;
-            mbsStatus  = "success";
-            freq = convertNumber(data.data) /100;
-            console.log("Frequency : " + freq.toLocaleString());
-            
-        
-        })
-        .catch(function(e)
-        {
-            mbsState  = MBS_STATE_FAIL_READ;
-            mbsStatus = e.message;
-            console.log(e);
-        });    
-    }, 5000);
-    
+            power = (convertNumber(tempnum) * ctratio) / 1000;
+            console.log(`Power-${phase} : ${power.toLocaleString()} kW`);
+            tempnum = 0;
+          }
+          break;
+        case "PowerFactor":
+          {
+            tempnum = data.data[0];
+            pf = convertNumber(tempnum) / 1000;
+            console.log(`PF-${phase} :  ${pf.toLocaleString()}`);
+            tempnum = 0;
+          }
+          break;
+        case "Energy":
+          {
+            tempnum = data.data[0] + data.data[1] + data.data[2] + data.data[3];
+            energy = (convertNumber(tempnum) * ctratio) / 100;
+            console.log(`Energy-${phase} : ${energy.toLocaleString()} kwh`);
+            tempnum = 0;
+          }
+          break;
+        case "Frequency": {
+          freq = convertNumber(data.data) / 100;
+          console.log("Frequency : " + freq.toLocaleString());
+        }
+      }
+    })
+    .catch(function (e) {
+      mbsState = MBS_STATE_FAIL_READ;
+      mbsStatus = e.message;
+      console.log(e);
+    });
 };
+const readModbusData = () => {
+  addrArray.forEach((item, index) => {
+    setTimeout(() => {
+      readRegister(item.addr, item.unit, item.phase);
+    }, 100 * index);
+  });
+};
+// //==============================================================
+// const readModbusData = function () {
+//   // try to read data
+//   setTimeout(() => {
+//     client
+//       .readHoldingRegisters(0x033f, 2) //voltage
+//       .then(function (data) {
+//         mbsState = MBS_STATE_GOOD_READ;
+//         mbsStatus = "success";
+//         let tempnum = data.data[0] + data.data[1];
+//         voltage = convertNumber(tempnum);
+//         voltage = voltage / 10;
+//         console.log("Voltage : " + voltage.toLocaleString() + " Volt");
+//         tempnum = 0;
+//       })
+//       .catch(function (e) {
+//         mbsState = MBS_STATE_FAIL_READ;
+//         mbsStatus = e.message;
+//         console.log(e);
+//       });
+//   }, 200);
+//   setTimeout(() => {
+//     client
+//       .readHoldingRegisters(0x0342, 2) //current
+//       .then(function (data) {
+//         mbsState = MBS_STATE_GOOD_READ;
+//         mbsStatus = "success";
+//         //  console.log(data.data);
+//         let tempnum = data.data[0] + data.data[1];
+//         current = (convertNumber(tempnum) * ctratio) / 100;
+//         console.log("Current : " + current.toLocaleString() + " A");
+//       })
+//       .catch(function (e) {
+//         mbsState = MBS_STATE_FAIL_READ;
+//         mbsStatus = e.message;
+//         console.log(e);
+//       });
+//   }, 1000);
+//   setTimeout(() => {
+//     client
+//       .readHoldingRegisters(0x0346, 2) //active power
+//       .then(function (data) {
+//         mbsState = MBS_STATE_GOOD_READ;
+//         mbsStatus = "success";
+//         //console.log(data.data);
+//         let tempnum = data.data[0] + data.data[1];
 
+//         power = (convertNumber(tempnum) * ctratio) / 1000;
+//         console.log("Active power : " + power.toLocaleString() + " kW");
+//       })
+//       .catch(function (e) {
+//         mbsState = MBS_STATE_FAIL_READ;
+//         mbsStatus = e.message;
+//         console.log(e);
+//       });
+//   }, 2000);
+//   setTimeout(() => {
+//     client
+//       .readHoldingRegisters(0x034e, 2) //power factor
+//       .then(function (data) {
+//         mbsState = MBS_STATE_GOOD_READ;
+//         mbsStatus = "success";
+//         //console.log(data.data);
+//         let tempnum = data.data[0];
+//         pf = convertNumber(tempnum) / 1000;
+//         console.log("Power factor : " + pf.toLocaleString());
+//       })
+//       .catch(function (e) {
+//         mbsState = MBS_STATE_FAIL_READ;
+//         mbsStatus = e.message;
+//         console.log(e);
+//       });
+//   }, 3000);
+//   setTimeout(() => {
+//     client
+//       .readHoldingRegisters(0x0352, 4) //active energy
+//       .then(function (data) {
+//         mbsState = MBS_STATE_GOOD_READ;
+//         mbsStatus = "success";
+//         let tempnum = data.data[0] + data.data[1] + data.data[2] + data.data[3];
+//         energy = (convertNumber(tempnum) * ctratio) / 100;
+//         console.log("Active Energy : " + energy.toLocaleString() + " kwh");
+//       })
+//       .catch(function (e) {
+//         mbsState = MBS_STATE_FAIL_READ;
+//         mbsStatus = e.message;
+//         console.log(e);
+//       });
+//   }, 4000);
+//   setTimeout(() => {
+//     client
+//       .readHoldingRegisters(0x0351, 1) //frequency
+//       .then(function (data) {
+//         mbsState = MBS_STATE_GOOD_READ;
+//         mbsStatus = "success";
+//         freq = convertNumber(data.data) / 100;
+//         console.log("Frequency : " + freq.toLocaleString());
+//       })
+//       .catch(function (e) {
+//         mbsState = MBS_STATE_FAIL_READ;
+//         mbsStatus = e.message;
+//         console.log(e);
+//       });
+//   }, 5000);
+// };
 
 //==============================================================
-const runModbus = function()
-{
-    let nextAction;
+const runModbus = function () {
+  let nextAction;
 
-    switch (mbsState)
-    {
-        case MBS_STATE_INIT:
-            nextAction = connectClient;
-            break;
+  switch (mbsState) {
+    case MBS_STATE_INIT:
+      nextAction = connectClient;
+      break;
 
-        case MBS_STATE_NEXT:
-            nextAction = readModbusData;
-            break;
+    case MBS_STATE_NEXT:
+      nextAction = readModbusData;
+      break;
 
-        case MBS_STATE_GOOD_CONNECT:
-            nextAction = readModbusData;
-            break;
+    case MBS_STATE_GOOD_CONNECT:
+      nextAction = readModbusData;
+      break;
 
-        case MBS_STATE_FAIL_CONNECT:
-            nextAction = connectClient;
-            break;
+    case MBS_STATE_FAIL_CONNECT:
+      nextAction = connectClient;
+      break;
 
-        case MBS_STATE_GOOD_READ:
-            nextAction = readModbusData;
-            break;
+    case MBS_STATE_GOOD_READ:
+      nextAction = readModbusData;
+      break;
 
-        case MBS_STATE_FAIL_READ:
-            if (client.isOpen)  { mbsState = MBS_STATE_NEXT;  }
-            else                { nextAction = connectClient; }
-            break;
+    case MBS_STATE_FAIL_READ:
+      if (client.isOpen) {
+        mbsState = MBS_STATE_NEXT;
+      } else {
+        nextAction = connectClient;
+      }
+      break;
 
-        default:
-            // nothing to do, keep scanning until actionable case
-    }
+    default:
+    // nothing to do, keep scanning until actionable case
+  }
 
-    console.log();
-    console.log(nextAction);
+  console.log();
+  console.log(nextAction);
 
-    // execute "next action" function if defined
-    if (nextAction !== undefined)
-    {
-        nextAction();
-        mbsState = MBS_STATE_IDLE;
-    }
+  // execute "next action" function if defined
+  if (nextAction !== undefined) {
+    nextAction();
+    mbsState = MBS_STATE_IDLE;
+  }
 
-    // set for next run
-    setTimeout (runModbus, mbsScan);
+  // set for next run
+  setTimeout(runModbus, mbsScan);
 };
-function convertNumber(num){
-    if(num>32768)
-    {
-        resnum = 65536-num;
-    }
-    else{
-        resnum = num;
-    }
-    return resnum;
+function convertNumber(num) {
+  if (num > 32768) {
+    resnum = 65536 - num;
+  } else {
+    resnum = num;
+  }
+  return resnum;
 }
 //==============================================================
 runModbus();
-   

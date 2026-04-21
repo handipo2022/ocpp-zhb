@@ -134,6 +134,15 @@ const handleResponse = (connection, action, payload) => {
         interval * 1000
       );
       break;
+    case "ChangeConfiguration":
+      const key = payload[2].key;
+      const value = payload[2].value;
+      console.log(`key : ${key}, value : ${value}`);
+      const msg = [payload[0], payload[1], { status: "Accepted" }];
+      connection.sendUTF(JSON.stringify(msg));
+      break;
+    default:
+      break;
   }
 };
 
@@ -155,8 +164,12 @@ const main = async () => {
         console.log(`Received response : ${message.utf8Data}`);
         const data = JSON.parse(message.utf8Data);
         const messageType = data[0];
-
-        if (messageType === 3) {
+        if (messageType === 2) {
+          const uniqueId = data[1];
+          const action = data[2];
+          const payload = data[3];
+          handleResponse(connection, action, [3, uniqueId, payload]);
+        } else if (messageType === 3) {
           // CALLRESULT
           const uniqueId = data[1];
           const payload = data[2];
