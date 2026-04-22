@@ -34,7 +34,7 @@ const connector = `CREATE TABLE IF NOT EXISTS connector (
       errorCode TEXT      
     )`;
 
-const configuration = `CREATE TABLE IF NOT EXISTS configuration (     
+const configuration = `CREATE TABLE IF NOT EXISTS configuration (
       id INTEGER PRIMARY KEY,
       AllowOfflineTxForUnknownId BOOLEAN,
       AuthorizationCacheEnabled BOOLEAN,
@@ -49,21 +49,36 @@ const configuration = `CREATE TABLE IF NOT EXISTS configuration (
       LocalPreAuthorize BOOLEAN,
       MaxEnergyOnInvalidId INTEGER,
       MeterValuesAlignedData TEXT,
+      MeterValuesAlignedDataMaxLength INTEGER,
       MeterValuesSampledData TEXT,
+      MeterValuesSampledDataMaxLength INTEGER,
       MeterValueSampleInterval INTEGER,
       MinimumStatusDuration INTEGER,
       NumberOfConnectors INTEGER,
       ResetRetries INTEGER,
       ConnectorPhaseRotation TEXT,
+      ConnectorPhaseRotationMaxLength INTEGER,
       StopTransactionOnEVSideDisconnect BOOLEAN,
       StopTransactionOnInvalidId BOOLEAN,
       StopTxnAlignedData TEXT,
+      StopTxnAlignedDataMaxLength INTEGER,
       StopTxnSampledData TEXT,
-      SupportedFeatureProfiles TEXT, 
+      StopTxnSampledDataMaxLength INTEGER,
+      SupportedFeatureProfiles TEXT,
+      SupportedFeatureProfilesMaxLength INTEGER,
       TransactionMessageAttempts INTEGER,
       TransactionMessageRetryInterval INTEGER,
       UnlockConnectorOnEVSideDisconnect BOOLEAN,
-      WebSocketPingInterval INTEGER
+      WebSocketPingInterval INTEGER,
+      LocalAuthListEnabled BOOLEAN,
+      LocalAuthListMaxLength INTEGER,
+      SendLocalListMaxLength INTEGER,
+      ReserveConnectorZeroSupported BOOLEAN,
+      ChargerProfileMaxStackLevel INTEGER,
+      ChargingScheduleAllowedChargingRateUnit TEXT,
+      ChargingScheduleMaxPeriods INTEGER,
+      ConnectorSwitch3to1PhaseSupported BOOLEAN,
+      MaxChargingProfilesInstalled INTEGER
     )`;
 
 const db = dbase.connect(name); //connect dbase
@@ -210,6 +225,157 @@ app.post("/ocpp/savedata", async (req, res) => {
   }
 });
 
+app.post("/configcp/changeconfiguration", async (req, res) => {
+  const {
+    AllowOfflineTxForUnknownId,
+    AuthorizationCacheEnabled,
+    AuthorizeRemoteTxRequests,
+    BlinkRepeat,
+    ClockAlignedDataInterval,
+    ConnectionTimeOut,
+    GetConfigurationMaxKeys,
+    HeartbeatInterval,
+    LightIntensity,
+    LocalAuthorizeOffline,
+    LocalPreAuthorize,
+    MaxEnergyOnInvalidId,
+    MeterValuesAlignedData,
+    MeterValuesAlignedDataMaxLength,
+    MeterValuesSampledData,
+    MeterValuesSampledDataMaxLength,
+    MeterValueSampleInterval,
+    MinimumStatusDuration,
+    NumberOfConnectors,
+    ResetRetries,
+    ConnectorPhaseRotation,
+    ConnectorPhaseRotationMaxLength,
+    StopTransactionOnEVSideDisconnect,
+    StopTransactionOnInvalidId,
+    StopTxnAlignedData,
+    StopTxnAlignedDataMaxLength,
+    StopTxnSampledData,
+    StopTxnSampledDataMaxLength,
+    SupportedFeatureProfiles,
+    SupportedFeatureProfilesMaxLength,
+    TransactionMessageAttempts,
+    TransactionMessageRetryInterval,
+    UnlockConnectorOnEVSideDisconnect,
+    WebSocketPingInterval,
+    LocalAuthListEnabled,
+    LocalAuthListMaxLength,
+    SendLocalListMaxLength,
+    ReserveConnectorZeroSupported,
+    ChargerProfileMaxStackLevel,
+    ChargingScheduleAllowedChargingRateUnit,
+    ChargingScheduleMaxPeriods,
+    ConnectorSwitch3to1PhaseSupported,
+    MaxChargingProfilesInstalled,
+  } = req.body;
+
+  try {
+    const sql = `
+    INSERT OR REPLACE INTO configuration (
+      id,  
+      AllowOfflineTxForUnknownId,
+      AuthorizationCacheEnabled,
+      AuthorizeRemoteTxRequests,
+      BlinkRepeat,
+      ClockAlignedDataInterval,
+      ConnectionTimeOut,
+      GetConfigurationMaxKeys,
+      HeartbeatInterval,
+      LightIntensity,
+      LocalAuthorizeOffline,
+      LocalPreAuthorize,
+      MaxEnergyOnInvalidId,
+      MeterValuesAlignedData,
+      MeterValuesAlignedDataMaxLength,
+      MeterValuesSampledData,
+      MeterValuesSampledDataMaxLength,
+      MeterValueSampleInterval,
+      MinimumStatusDuration,
+      NumberOfConnectors,
+      ResetRetries,
+      ConnectorPhaseRotation,
+      ConnectorPhaseRotationMaxLength,
+      StopTransactionOnEVSideDisconnect,
+      StopTransactionOnInvalidId,
+      StopTxnAlignedData,
+      StopTxnAlignedDataMaxLength,
+      StopTxnSampledData,
+      StopTxnSampledDataMaxLength,
+      SupportedFeatureProfiles,
+      SupportedFeatureProfilesMaxLength,
+      TransactionMessageAttempts,
+      TransactionMessageRetryInterval,
+      UnlockConnectorOnEVSideDisconnect,
+      WebSocketPingInterval,
+      LocalAuthListEnabled,
+      LocalAuthListMaxLength,
+      SendLocalListMaxLength,
+      ReserveConnectorZeroSupported,
+      ChargerProfileMaxStackLevel,
+      ChargingScheduleAllowedChargingRateUnit,
+      ChargingScheduleMaxPeriods,
+      ConnectorSwitch3to1PhaseSupported,
+      MaxChargingProfilesInstalled
+      
+    ) VALUES (1,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+  `;
+
+    const values = [
+      AllowOfflineTxForUnknownId,
+      AuthorizationCacheEnabled,
+      AuthorizeRemoteTxRequests,
+      BlinkRepeat,
+      ClockAlignedDataInterval,
+      ConnectionTimeOut,
+      GetConfigurationMaxKeys,
+      HeartbeatInterval,
+      LightIntensity,
+      LocalAuthorizeOffline,
+      LocalPreAuthorize,
+      MaxEnergyOnInvalidId,
+      MeterValuesAlignedData,
+      MeterValuesAlignedDataMaxLength,
+      MeterValuesSampledData,
+      MeterValuesSampledDataMaxLength,
+      MeterValueSampleInterval,
+      MinimumStatusDuration,
+      NumberOfConnectors,
+      ResetRetries,
+      ConnectorPhaseRotation,
+      ConnectorPhaseRotationMaxLength,
+      StopTransactionOnEVSideDisconnect,
+      StopTransactionOnInvalidId,
+      StopTxnAlignedData,
+      StopTxnAlignedDataMaxLength,
+      StopTxnSampledData,
+      StopTxnSampledDataMaxLength,
+      SupportedFeatureProfiles,
+      SupportedFeatureProfilesMaxLength,
+      TransactionMessageAttempts,
+      TransactionMessageRetryInterval,
+      UnlockConnectorOnEVSideDisconnect,
+      WebSocketPingInterval,
+      LocalAuthListEnabled,
+      LocalAuthListMaxLength,
+      SendLocalListMaxLength,
+      ReserveConnectorZeroSupported,
+      ChargerProfileMaxStackLevel,
+      ChargingScheduleAllowedChargingRateUnit,
+      ChargingScheduleMaxPeriods,
+      ConnectorSwitch3to1PhaseSupported,
+      MaxChargingProfilesInstalled,
+    ];
+    dbase.insert(db, sql, values);
+
+    res.status(200).send();
+  } catch (err) {
+    console.log(err);
+    res.status(500).send();
+  }
+});
 app.listen(port, () => {
   console.log(`Webserver ready on port ${port}`);
 });

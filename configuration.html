@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebUI Charger</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="./script.js"></script>
+    <link
+      rel="stylesheet"
+      href="node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+  <body class="bg-black">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="./index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./chargerdata.html">Charger Data</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./ocpp.html">OCPP</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./configuration.html">Config</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <h2 class="mt-4 fw-bold text-primary text-center">Configuration</h2>
+
+    <div class="container-sm">
+      <h3></h3>
+      <label class="form-label text-primary">AllowOfflineTxForUnknownId</label>
+      <select
+        class="form-control"
+        name="AllowOfflineTxForUnknownId"
+        id="AllowOfflineTxForUnknownId"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label class="form-label text-primary">AuthorizationCacheEnabled</label>
+      <select
+        class="form-control"
+        name="AuthorizationCacheEnabled"
+        id="AuthorizationCacheEnabled"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label class="form-label text-primary">AuthorizeRemoteTxRequests</label>
+      <select
+        class="form-control"
+        name="AuthorizeRemoteTxRequests"
+        id="AuthorizeRemoteTxRequests"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label class="form-label text-primary">BlinkRepeat</label>
+      <input class="form-control" id="BlinkRepeat" type="text" />
+      <label class="form-label text-primary">ClockAlignedDataInterval</label>
+      <input class="form-control" id="ClockAlignedDataInterval" type="text" />
+      <label class="form-label text-primary">ConnectionTimeOut</label>
+      <input class="form-control" id="ConnectionTimeOut" type="text" />
+      <label class="form-label text-primary">GetConfigurationMaxKeys</label>
+      <input class="form-control" id="GetConfigurationMaxKeys" type="text" />
+      <label class="form-label text-primary">HeartbeatInterval</label>
+      <input class="form-control" id="HeartbeatInterval" type="text" />
+      <label class="form-label text-primary">LightIntensity</label>
+      <input class="form-control" id="LightIntensity" type="text" />
+      <label class="form-label text-primary">LocalAuthorizeOffline</label>
+      <select
+        class="form-control"
+        name="LocalAuthorizeOffline"
+        id="LocalAuthorizeOffline"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label class="form-label text-primary">LocalPreAuthorize</label>
+      <select
+        class="form-control"
+        name="LocalPreAuthorize"
+        id="LocalPreAuthorize"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label class="form-label text-primary">MaxEnergyOnInvalidId</label>
+      <input class="form-control" id="MaxEnergyOnInvalidId" type="text" />
+      <label class="form-label text-primary">MeterValuesAlignedData</label>
+      <input class="form-control" id="MeterValuesAlignedData" type="text" />
+      <label class="form-label text-primary"
+        >MeterValuesAlignedDataMaxLength</label
+      >
+      <input
+        class="form-control"
+        id="MeterValuesAlignedDataMaxLength"
+        type="text"
+      />
+      <label class="form-label text-primary">MeterValuesSampledData</label>
+      <input class="form-control" id="MeterValuesSampledData" type="text" />
+      <label class="form-label text-primary"
+        >MeterValuesSampledDataMaxLength</label
+      >
+      <input
+        class="form-control"
+        id="MeterValuesSampledDataMaxLength"
+        type="text"
+      />
+
+      <label class="form-label text-primary">MeterValueSampleInterval</label>
+      <input class="form-control" id="MeterValueSampleInterval" type="text" />
+      <label class="form-label text-primary">MinimumStatusDuration</label>
+      <input class="form-control" id="MinimumStatusDuration" type="text" />
+      <label class="form-label text-primary">NumberOfConnectors</label>
+      <input class="form-control" id="NumberOfConnectors" type="text" />
+      <label class="form-label text-primary">ResetRetries</label>
+      <input class="form-control" id="ResetRetries" type="text" />
+      <label class="form-label text-primary">ConnectorPhaseRotation</label>
+      <input class="form-control" id="ConnectorPhaseRotation" type="text" />
+      <label class="form-label text-primary"
+        >ConnectorPhaseRotationMaxLength</label
+      >
+      <input
+        class="form-control"
+        id="ConnectorPhaseRotationMaxLength"
+        type="text"
+      />
+      <label class="form-label text-primary"
+        >StopTransactionOnEVSideDisconnect</label
+      >
+      <select
+        class="form-control"
+        name="StopTransactionOnEVSideDisconnect"
+        id="StopTransactionOnEVSideDisconnect"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label class="form-label text-primary">StopTransactionOnInvalidId</label>
+      <select
+        class="form-control"
+        name="StopTransactionOnInvalidId"
+        id="StopTransactionOnInvalidId"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label class="form-label text-primary">StopTxnAlignedData</label>
+      <input class="form-control" id="StopTxnAlignedData" type="text" />
+      <label class="form-label text-primary">StopTxnAlignedDataMaxLength</label>
+      <input
+        class="form-control"
+        id="StopTxnAlignedDataMaxLength"
+        type="text"
+      />
+      <label class="form-label text-primary">StopTxnSampledData</label>
+      <input class="form-control" id="StopTxnSampledData" type="text" />
+      <label class="form-label text-primary">StopTxnSampledDataMaxLength</label>
+      <input
+        class="form-control"
+        id="StopTxnSampledDataMaxLength"
+        type="text"
+      />
+      <label class="form-label text-primary">SupportedFeatureProfiles</label>
+      <input class="form-control" id="SupportedFeatureProfiles" type="text" />
+      <label class="form-label text-primary"
+        >SupportedFeatureProfilesMaxLength</label
+      >
+      <input
+        class="form-control"
+        id="SupportedFeatureProfilesMaxLength"
+        type="text"
+      />
+
+      <label class="form-label text-primary">TransactionMessageAttempts</label>
+      <input class="form-control" id="TransactionMessageAttempts" type="text" />
+      <label class="form-label text-primary"
+        >TransactionMessageRetryInterval</label
+      >
+      <input
+        class="form-control"
+        id="TransactionMessageRetryInterval"
+        type="text"
+      />
+      <label class="form-label text-primary"
+        >UnlockConnectorOnEVSideDisconnect</label
+      >
+      <select
+        class="form-control"
+        name="UnlockConnectorOnEVSideDisconnect"
+        id="UnlockConnectorOnEVSideDisconnect"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label class="form-label text-primary">WebSocketPingInterval</label>
+      <input class="form-control" id="WebSocketPingInterval" type="text" />
+      <label class="form-label text-primary">LocalAuthListEnabled</label>
+      <select
+        class="form-control"
+        name="LocalAuthListEnabled"
+        id="LocalAuthListEnabled"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label class="form-label text-primary">LocalAuthListMaxLength</label>
+      <input class="form-control" id="LocalAuthListMaxLength" type="text" />
+      <label class="form-label text-primary">SendLocalListMaxLength</label>
+      <input class="form-control" id="SendLocalListMaxLength" type="text" />
+      <label class="form-label text-primary"
+        >ReserveConnectorZeroSupported</label
+      >
+      <select
+        class="form-control"
+        name="ReserveConnectorZeroSupported"
+        id="ReserveConnectorZeroSupported"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label class="form-label text-primary">ChargerProfileMaxStackLevel</label>
+      <input
+        class="form-control"
+        id="ChargerProfileMaxStackLevel"
+        type="text"
+      />
+      <label class="form-label text-primary"
+        >ChargingScheduleAllowedChargingRateUnit</label
+      >
+      <input
+        class="form-control"
+        id="ChargingScheduleAllowedChargingRateUnit"
+        type="text"
+      />
+      <label class="form-label text-primary">ChargingScheduleMaxPeriods</label>
+      <input class="form-control" id="ChargingScheduleMaxPeriods" type="text" />
+      <label class="form-label text-primary"
+        >ConnectorSwitch3to1PhaseSupported</label
+      >
+      <select
+        class="form-control"
+        name="ConnectorSwitch3to1PhaseSupported"
+        id="ConnectorSwitch3to1PhaseSupported"
+      >
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+      <label class="form-label text-primary"
+        >MaxChargingProfilesInstalled</label
+      >
+      <input
+        class="form-control"
+        id="MaxChargingProfilesInstalled"
+        type="text"
+      />
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center">
+      <button
+        class="btn btn-primary mx-2 mt-4"
+        id="changeconfig"
+        onclick="ChangeConfiguration()"
+      >
+        Save</button
+      ><br />
+      <button
+        class="btn btn-primary mx-2 mt-4"
+        id="readconfig"
+        onclick="ReadConfiguration()"
+      >
+        Read</button
+      ><br />
+    </div>
+  </body>
+</html>
