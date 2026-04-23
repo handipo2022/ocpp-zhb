@@ -10,7 +10,7 @@
     />
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   </head>
-  <body class="bg-black">
+  <body class="bg-black" onload="ReadConfiguration()">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
         <button
@@ -82,7 +82,12 @@
       <label class="form-label text-primary">ConnectionTimeOut</label>
       <input class="form-control" id="ConnectionTimeOut" type="text" />
       <label class="form-label text-primary">GetConfigurationMaxKeys</label>
-      <input class="form-control" id="GetConfigurationMaxKeys" type="text" />
+      <input
+        class="form-control"
+        id="GetConfigurationMaxKeys"
+        type="text"
+        disabled
+      />
       <label class="form-label text-primary">HeartbeatInterval</label>
       <input class="form-control" id="HeartbeatInterval" type="text" />
       <label class="form-label text-primary">LightIntensity</label>
@@ -116,6 +121,7 @@
         class="form-control"
         id="MeterValuesAlignedDataMaxLength"
         type="text"
+        disabled
       />
       <label class="form-label text-primary">MeterValuesSampledData</label>
       <input class="form-control" id="MeterValuesSampledData" type="text" />
@@ -126,6 +132,7 @@
         class="form-control"
         id="MeterValuesSampledDataMaxLength"
         type="text"
+        disabled
       />
 
       <label class="form-label text-primary">MeterValueSampleInterval</label>
@@ -133,7 +140,12 @@
       <label class="form-label text-primary">MinimumStatusDuration</label>
       <input class="form-control" id="MinimumStatusDuration" type="text" />
       <label class="form-label text-primary">NumberOfConnectors</label>
-      <input class="form-control" id="NumberOfConnectors" type="text" />
+      <input
+        class="form-control"
+        id="NumberOfConnectors"
+        type="text"
+        disabled
+      />
       <label class="form-label text-primary">ResetRetries</label>
       <input class="form-control" id="ResetRetries" type="text" />
       <label class="form-label text-primary">ConnectorPhaseRotation</label>
@@ -145,6 +157,7 @@
         class="form-control"
         id="ConnectorPhaseRotationMaxLength"
         type="text"
+        disabled
       />
       <label class="form-label text-primary"
         >StopTransactionOnEVSideDisconnect</label
@@ -173,6 +186,7 @@
         class="form-control"
         id="StopTxnAlignedDataMaxLength"
         type="text"
+        disabled
       />
       <label class="form-label text-primary">StopTxnSampledData</label>
       <input class="form-control" id="StopTxnSampledData" type="text" />
@@ -181,6 +195,7 @@
         class="form-control"
         id="StopTxnSampledDataMaxLength"
         type="text"
+        disabled
       />
       <label class="form-label text-primary">SupportedFeatureProfiles</label>
       <input class="form-control" id="SupportedFeatureProfiles" type="text" />
@@ -191,6 +206,7 @@
         class="form-control"
         id="SupportedFeatureProfilesMaxLength"
         type="text"
+        disabled
       />
 
       <label class="form-label text-primary">TransactionMessageAttempts</label>
@@ -226,9 +242,19 @@
         <option value="false">false</option>
       </select>
       <label class="form-label text-primary">LocalAuthListMaxLength</label>
-      <input class="form-control" id="LocalAuthListMaxLength" type="text" />
+      <input
+        class="form-control"
+        id="LocalAuthListMaxLength"
+        type="text"
+        disabled
+      />
       <label class="form-label text-primary">SendLocalListMaxLength</label>
-      <input class="form-control" id="SendLocalListMaxLength" type="text" />
+      <input
+        class="form-control"
+        id="SendLocalListMaxLength"
+        type="text"
+        disabled
+      />
       <label class="form-label text-primary"
         >ReserveConnectorZeroSupported</label
       >
@@ -245,6 +271,7 @@
         class="form-control"
         id="ChargerProfileMaxStackLevel"
         type="text"
+        disabled
       />
       <label class="form-label text-primary"
         >ChargingScheduleAllowedChargingRateUnit</label
@@ -253,6 +280,7 @@
         class="form-control"
         id="ChargingScheduleAllowedChargingRateUnit"
         type="text"
+        disabled
       />
       <label class="form-label text-primary">ChargingScheduleMaxPeriods</label>
       <input class="form-control" id="ChargingScheduleMaxPeriods" type="text" />
@@ -263,6 +291,7 @@
         class="form-control"
         name="ConnectorSwitch3to1PhaseSupported"
         id="ConnectorSwitch3to1PhaseSupported"
+        disabled
       >
         <option value="true">true</option>
         <option value="false">false</option>
@@ -274,6 +303,7 @@
         class="form-control"
         id="MaxChargingProfilesInstalled"
         type="text"
+        disabled
       />
     </div>
 

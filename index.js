@@ -376,6 +376,28 @@ app.post("/configcp/changeconfiguration", async (req, res) => {
     res.status(500).send();
   }
 });
+
+app.get("/configcp/readconfiguration", async (req, res) => {
+  try {
+    const sql = `SELECT * FROM configuration WHERE id = ?`;
+    dbase.read(db, sql, [1], (err, row) => {
+      if (err) {
+        console.error("Error:", err);
+        return res.status(500).send({ error: "Database query failed" });
+      } else if (!row) {
+        console.log("Data not found");
+        return res.status(404).send({ error: "Data not found" });
+      } else {
+        console.log("Data:", row);
+        // kirim langsung sebagai JSON
+        return res.status(200).json(row);
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send();
+  }
+});
 app.listen(port, () => {
   console.log(`Webserver ready on port ${port}`);
 });

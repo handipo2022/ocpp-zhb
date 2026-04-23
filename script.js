@@ -106,169 +106,60 @@ async function saveocpp() {
     console.log(err);
   }
 }
+const ocppConfiguration = [
+  "AllowOfflineTxForUnknownId",
+  "AuthorizationCacheEnabled",
+  "AuthorizeRemoteTxRequests",
+  "BlinkRepeat",
+  "ClockAlignedDataInterval",
+  "ConnectionTimeOut",
+  "GetConfigurationMaxKeys",
+  "HeartbeatInterval",
+  "LightIntensity",
+  "LocalAuthorizeOffline",
+  "LocalPreAuthorize",
+  "MaxEnergyOnInvalidId",
+  "MeterValuesAlignedData",
+  "MeterValuesAlignedDataMaxLength",
+  "MeterValuesSampledData",
+  "MeterValuesSampledDataMaxLength",
+  "MeterValueSampleInterval",
+  "MinimumStatusDuration",
+  "NumberOfConnectors",
+  "ResetRetries",
+  "ConnectorPhaseRotation",
+  "ConnectorPhaseRotationMaxLength",
+  "StopTransactionOnEVSideDisconnect",
+  "StopTransactionOnInvalidId",
+  "StopTxnAlignedData",
+  "StopTxnAlignedDataMaxLength",
+  "StopTxnSampledData",
+  "StopTxnSampledDataMaxLength",
+  "SupportedFeatureProfiles",
+  "SupportedFeatureProfilesMaxLength",
+  "TransactionMessageAttempts",
+  "TransactionMessageRetryInterval",
+  "UnlockConnectorOnEVSideDisconnect",
+  "WebSocketPingInterval",
+  "LocalAuthListEnabled",
+  "LocalAuthListMaxLength",
+  "SendLocalListMaxLength",
+  "ReserveConnectorZeroSupported",
+  "ChargerProfileMaxStackLevel",
+  "ChargingScheduleAllowedChargingRateUnit",
+  "ChargingScheduleMaxPeriods",
+  "ConnectorSwitch3to1PhaseSupported",
+  "MaxChargingProfilesInstalled",
+];
 
 async function ChangeConfiguration() {
-  var AllowOfflineTxForUnknownId = document.getElementById(
-    "AllowOfflineTxForUnknownId"
-  ).value;
-  var AuthorizationCacheEnabled = document.getElementById(
-    "AuthorizationCacheEnabled"
-  ).value;
-  var AuthorizeRemoteTxRequests = document.getElementById(
-    "AuthorizeRemoteTxRequests"
-  ).value;
-  var BlinkRepeat = document.getElementById("BlinkRepeat").value;
-  var ClockAlignedDataInterval = document.getElementById(
-    "ClockAlignedDataInterval"
-  ).value;
-  var ConnectionTimeOut = document.getElementById("ConnectionTimeOut").value;
-   var GetConfigurationMaxKeys = document.getElementById("GetConfigurationMaxKeys").value;
- 
-  var HeartbeatInterval = document.getElementById("HeartbeatInterval").value;
-  var LightIntensity = document.getElementById("LightIntensity").value;
-  var LocalAuthorizeOffline = document.getElementById(
-    "LocalAuthorizeOffline"
-  ).value;
-  var LocalPreAuthorize = document.getElementById("LocalPreAuthorize").value;
-  var MaxEnergyOnInvalidId = document.getElementById(
-    "MaxEnergyOnInvalidId"
-  ).value;
-  var MeterValuesAlignedData = document.getElementById(
-    "MeterValuesAlignedData"
-  ).value;
-  var MeterValuesAlignedDataMaxLength = document.getElementById(
-    "MeterValuesAlignedDataMaxLength"
-  ).value;
-  var MeterValuesSampledData = document.getElementById(
-    "MeterValuesSampledData"
-  ).value;
-  var MeterValuesSampledDataMaxLength = document.getElementById(
-    "MeterValuesSampledDataMaxLength"
-  ).value;
-  var MeterValueSampleInterval = document.getElementById(
-    "MeterValueSampleInterval"
-  ).value;
-  var MinimumStatusDuration = document.getElementById(
-    "MinimumStatusDuration"
-  ).value;
-  var NumberOfConnectors = document.getElementById("NumberOfConnectors").value;
-  var ResetRetries = document.getElementById("ResetRetries").value;
-  var ConnectorPhaseRotation = document.getElementById(
-    "ConnectorPhaseRotation"
-  ).value;
-  var ConnectorPhaseRotationMaxLength = document.getElementById(
-    "ConnectorPhaseRotationMaxLength"
-  ).value;
-  var StopTransactionOnEVSideDisconnect = document.getElementById(
-    "StopTransactionOnEVSideDisconnect"
-  ).value;
-  var StopTransactionOnInvalidId = document.getElementById(
-    "StopTransactionOnInvalidId"
-  ).value;
-  var StopTxnAlignedData = document.getElementById("StopTxnAlignedData").value;
-  var StopTxnAlignedDataMaxLength = document.getElementById(
-    "StopTxnAlignedDataMaxLength"
-  ).value;
-  var StopTxnSampledData = document.getElementById("StopTxnSampledData").value;
-  var StopTxnSampledDataMaxLength = document.getElementById(
-    "StopTxnSampledDataMaxLength"
-  ).value;
+  //create data object
+  var data = {};
+  ocppConfiguration.forEach((item) => {
+    data[item] = document.getElementById(item).value;
+  });
 
-  var SupportedFeatureProfiles = document.getElementById(
-    "SupportedFeatureProfiles"
-  ).value;
-  var SupportedFeatureProfilesMaxLength = document.getElementById(
-    "SupportedFeatureProfilesMaxLength"
-  ).value;
-  var TransactionMessageAttempts = document.getElementById(
-    "TransactionMessageAttempts"
-  ).value;
-  var TransactionMessageRetryInterval = document.getElementById(
-    "TransactionMessageRetryInterval"
-  ).value;
-  var UnlockConnectorOnEVSideDisconnect = document.getElementById(
-    "UnlockConnectorOnEVSideDisconnect"
-  ).value;
-  var WebSocketPingInterval = document.getElementById(
-    "WebSocketPingInterval"
-  ).value;
-  var LocalAuthListEnabled = document.getElementById(
-    "LocalAuthListEnabled"
-  ).value;
-  var LocalAuthListMaxLength = document.getElementById(
-    "LocalAuthListMaxLength"
-  ).value;
-
-  var SendLocalListMaxLength = document.getElementById(
-    "LocalAuthListMaxLength"
-  ).value;
-  var ReserveConnectorZeroSupported = document.getElementById(
-    "ReserveConnectorZeroSupported"
-  ).value;
-  var ChargerProfileMaxStackLevel = document.getElementById(
-    "ChargerProfileMaxStackLevel"
-  ).value;
-  var ChargingScheduleAllowedChargingRateUnit = document.getElementById(
-    "ChargingScheduleAllowedChargingRateUnit"
-  ).value;
-  var ChargingScheduleMaxPeriods = document.getElementById(
-    "ChargingScheduleMaxPeriods"
-  ).value;
-  var ConnectorSwitch3to1PhaseSupported = document.getElementById(
-    "ConnectorSwitch3to1PhaseSupported"
-  ).value;
-
-  var MaxChargingProfilesInstalled = document.getElementById(
-    "MaxChargingProfilesInstalled"
-  ).value;
-
-  const data = {
-    AllowOfflineTxForUnknownId: AllowOfflineTxForUnknownId,
-    AuthorizationCacheEnabled: AuthorizationCacheEnabled,
-    AuthorizeRemoteTxRequests: AuthorizeRemoteTxRequests,
-    BlinkRepeat: BlinkRepeat,
-    ClockAlignedDataInterval: ClockAlignedDataInterval,
-    ConnectionTimeOut: ConnectionTimeOut,
-    GetConfigurationMaxKeys: GetConfigurationMaxKeys,
-    HeartbeatInterval: HeartbeatInterval,
-    LightIntensity: LightIntensity,
-    LocalAuthorizeOffline: LocalAuthorizeOffline,
-    LocalPreAuthorize: LocalPreAuthorize,
-    MaxEnergyOnInvalidId: MaxEnergyOnInvalidId,
-    MeterValuesAlignedData: MeterValuesAlignedData,
-    MeterValuesAlignedDataMaxLength: MeterValuesAlignedDataMaxLength,
-    MeterValuesSampledData: MeterValuesSampledData,
-    MeterValuesSampledDataMaxLength: MeterValuesSampledDataMaxLength,
-    MeterValueSampleInterval: MeterValueSampleInterval,
-    MinimumStatusDuration: MinimumStatusDuration,
-    NumberOfConnectors: NumberOfConnectors,
-    ResetRetries: ResetRetries,
-    ConnectorPhaseRotation: ConnectorPhaseRotation,
-    ConnectorPhaseRotationMaxLength: ConnectorPhaseRotationMaxLength,
-    StopTransactionOnEVSideDisconnect: StopTransactionOnEVSideDisconnect,
-    StopTransactionOnInvalidId: StopTransactionOnInvalidId,
-    StopTxnAlignedData: StopTxnAlignedData,
-    StopTxnAlignedDataMaxLength: StopTxnAlignedDataMaxLength,
-    StopTxnSampledData: StopTxnSampledData,
-    StopTxnSampledDataMaxLength: StopTxnSampledDataMaxLength,
-    SupportedFeatureProfiles: SupportedFeatureProfiles,
-    SupportedFeatureProfilesMaxLength: SupportedFeatureProfilesMaxLength,
-
-    TransactionMessageAttempts: TransactionMessageAttempts,
-    TransactionMessageRetryInterval: TransactionMessageRetryInterval,
-    UnlockConnectorOnEVSideDisconnect: UnlockConnectorOnEVSideDisconnect,
-    WebSocketPingInterval: WebSocketPingInterval,
-    LocalAuthListEnabled: LocalAuthListEnabled,
-    LocalAuthListMaxLength: LocalAuthListMaxLength,
-    SendLocalListMaxLength: SendLocalListMaxLength,
-    ReserveConnectorZeroSupported: ReserveConnectorZeroSupported,
-    ChargerProfileMaxStackLevel: ChargerProfileMaxStackLevel,
-    ChargingScheduleAllowedChargingRateUnit:
-      ChargingScheduleAllowedChargingRateUnit,
-    ChargingScheduleMaxPeriods: ChargingScheduleMaxPeriods,
-    ConnectorSwitch3to1PhaseSupported: ConnectorSwitch3to1PhaseSupported,
-    MaxChargingProfilesInstalled: MaxChargingProfilesInstalled,
-  };
+  //define url
   const url = `${hostname}/configcp/changeconfiguration`;
   try {
     const response = await fetch(url, {
@@ -276,7 +167,7 @@ async function ChangeConfiguration() {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams(data),
+      body: new URLSearchParams(data), //pass data into body
     });
     if (response.status === 200) {
       alert("Success");
@@ -286,6 +177,25 @@ async function ChangeConfiguration() {
     }
   } catch (err) {
     console.log(err);
+  }
+}
+
+async function ReadConfiguration() {
+  const url = `${hostname}/configcp/readconfiguration`;
+  try {
+    const response = await fetch(url);
+    if (response.status === 200) {
+      const result = await response.json();
+      ocppConfiguration.forEach((item) => {
+        document.getElementById(item).value = result[item];
+      });
+    } else if (response.status === 404) {
+      alert("Data not found");
+    } else if (response.status === 500) {
+      alert("Database query failed");
+    }
+  } catch (error) {
+    console.error(error.message);
   }
 }
 //updatestatussw();
@@ -574,7 +484,6 @@ async function ChangeConfiguration() {
 //       temparray[0].LastTagIdToken;
 //   };
 // }
-
 
 // function ChangeConfiguration() {
 //   var AllowOfflineTxForUnknownId = document.getElementById(
