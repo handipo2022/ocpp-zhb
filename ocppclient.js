@@ -138,8 +138,23 @@ const handleResponse = (connection, action, payload) => {
       const key = payload[2].key;
       const value = payload[2].value;
       console.log(`key : ${key}, value : ${value}`);
-      const msg = [payload[0], payload[1], { status: "Accepted" }];
-      connection.sendUTF(JSON.stringify(msg));
+
+      const sql = `
+  UPDATE configuration
+  SET ${key} = ?
+`;
+      var msg = [];
+      db.run(sql, value, (err) => {
+        if (err) {
+          console.error(err);
+          msg = [payload[0], payload[1], { status: "Rejected" }]; //send response back to server
+        } else {
+          console.log("Insert data success");
+          msg = [payload[0], payload[1], { status: "Accepted" }];
+        }
+        connection.sendUTF(JSON.stringify(msg));
+      });
+
       break;
     default:
       break;
