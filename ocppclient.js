@@ -13,22 +13,40 @@ let intervalId;
 
 const pendingRequests = {}; //{uniqueId : action}
 
+const readOnlyConfiguration = [
+  "GetConfigurationMaxKeys",
+  "MeterValuesAlignedDataMaxLength",
+  "MeterValuesSampledDataMaxLength",
+  "NumberOfConnectors",
+  "StopTxnAlignedDataMaxLength",
+  "ConnectorPhaseRotationMaxLength",
+  "StopTxnSampledDataMaxLength",
+  "SupportedFeatureProfiles",
+  "SupportedFeatureProfilesMaxLength",
+  "LocalAuthListMaxLength",
+  "SendLocalListMaxLength",
+  "ReserveConnectorZeroSupported",
+  "ChargeProfileMaxStackLevel",
+  "ChargingScheduleAllowedChargingRateUnit",
+  "ChargingScheduleMaxPeriods",
+  "ConnectorSwitch3to1PhaseSupported",
+  "MaxChargingProfilesInstalled",
+];
 //connect dbase
 const db = chargerDb.connect(name);
 
 //read database ,pass as payload in ocpp message
-const readData = async (sql, params = []) => {
+const readData = (sql, params = []) => {
   return new Promise((resolve, reject) => {
     chargerDb.read(db, sql, params, (err, row) => {
       if (err) {
-        reject(err);
+        return reject(err);
       } else {
         resolve(row);
       }
     });
   });
 };
-
 const BootNotificationPayload = async () => {
   row = await readData(`SELECT * FROM chargerdata WHERE id = ?`, [1]);
   return {
@@ -71,8 +89,6 @@ const generateRandomString = () => {
   }
   return randomString;
 };
-
-//------------------------------------------------
 
 //connect to ocpp server
 const connectWS = async (url, id, protocol) => {
@@ -155,6 +171,40 @@ const handleResponse = (connection, action, payload) => {
         connection.sendUTF(JSON.stringify(msg));
       });
 
+      break;
+    case "GetConfiguration":
+      (async () => {
+        var tempArray = [];
+        for (let j = 0; j < payload[2].key.length; j++) {
+          tempArray.push(payload[2].key[j]);
+        }
+        try {
+          const row = await readData(
+            `SELECT ${tempArray.toString()} FROM configuration WHERE id = ?`,
+            [1]
+          );
+          var msg = [];
+          const keyArray = Object.keys(row);
+          const valueArray = Object.values(row);
+          var configObj = {};
+          var tempArray = [];
+          for (let j = 0; j < keyArray.length; j++) {
+            const obj = {
+              key: keyArray[j],
+              readonly: readOnlyConfiguration.includes(keyArray[j])
+                ? true
+                : false,
+              value: valueArray[j],
+            };
+            tempArray.push(obj);
+          }
+          configObj.configurationKey = tempArray;
+          msg = [payload[0], payload[1], configObj];
+          connection.sendUTF(JSON.stringify(msg));
+        } catch (err) {
+          console.error("Error reading data:", err);
+        }
+      })();
       break;
     default:
       break;

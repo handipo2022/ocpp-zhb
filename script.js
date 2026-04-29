@@ -145,7 +145,7 @@ const ocppConfiguration = [
   "LocalAuthListMaxLength",
   "SendLocalListMaxLength",
   "ReserveConnectorZeroSupported",
-  "ChargerProfileMaxStackLevel",
+  "ChargeProfileMaxStackLevel",
   "ChargingScheduleAllowedChargingRateUnit",
   "ChargingScheduleMaxPeriods",
   "ConnectorSwitch3to1PhaseSupported",
