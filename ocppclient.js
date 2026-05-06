@@ -47,6 +47,7 @@ const readData = (sql, params = []) => {
     });
   });
 };
+
 const BootNotificationPayload = async () => {
   row = await readData(`SELECT * FROM chargerdata WHERE id = ?`, [1]);
   return {
@@ -206,6 +207,23 @@ const handleResponse = (connection, action, payload) => {
         }
       })();
       break;
+    case "Heartbeat":
+      db.run(
+        `
+  UPDATE ocpp
+  SET lastOnline = ?
+`,
+        payload.currentTime,
+        (err) => {
+          if (err) {
+            console.error(err);
+          } else {
+            console.log("Update data success");
+          }
+        }
+      );
+
+      break;
     default:
       break;
   }
@@ -239,6 +257,7 @@ const main = async () => {
           const uniqueId = data[1];
           const payload = data[2];
           const action = pendingRequests[uniqueId];
+        //  console.log(action);
           delete pendingRequests[uniqueId];
           handleResponse(connection, action, payload);
         } else if (messageType === 4) {
@@ -258,6 +277,27 @@ const main = async () => {
     BootNotification_payload = await BootNotificationPayload();
     sendOCPPMsg(connection, "BootNotification", BootNotification_payload);
     StatusNotification_payload = await StatusNotificationPayload();
+    var pingHeartbeat = setInterval(() => {
+      var timeNow = new Date();
+      (async () => {
+        try {
+          const row = await readData(
+            `SELECT lastOnline FROM ocpp WHERE id = ?`,
+            [1]
+          );
+          const valueArray = Object.values(row);
+          const lastOnline = new Date(valueArray).getTime();
+          console.log(timeNow.getTime() - lastOnline);
+          if (timeNow.getTime() - lastOnline > interval * 1000) {
+            console.log("Disconnected");
+          } else {
+            console.log("Connected");
+          }
+        } catch (err) {
+          console.error("Error reading data:", err);
+        }
+      })();
+    }, 10000);
   } catch (err) {
     console.log(err);
   }

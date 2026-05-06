@@ -25,7 +25,8 @@ const ocpp = `CREATE TABLE IF NOT EXISTS ocpp (
       id INTEGER PRIMARY KEY,
       url TEXT,
       chargerid TEXT,
-      numgun TEXT      
+      numgun TEXT,
+      lastOnline TEXT
     )`;
 const connector = `CREATE TABLE IF NOT EXISTS connector (     
       id INTEGER PRIMARY KEY,
