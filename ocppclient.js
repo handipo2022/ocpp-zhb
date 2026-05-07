@@ -230,18 +230,31 @@ const handleResponse = (connection, action, payload) => {
 };
 
 //main function
+let autoConnect = null;
+
 const main = async () => {
   try {
     row = await readData(`SELECT * FROM ocpp WHERE id = ?`, [1]);
     const connection = await connectWS(row.url, row.chargerid, protocol);
     console.log("Connected to websocket");
 
+     if (autoConnect) {
+      clearInterval(autoConnect);
+      autoConnect = null;
+    }
+   
     connection.on("error", (error) => {
       console.error("Connection error:", error);
     });
     connection.on("close", () => {
       console.log("Connection closed");
+      if (!autoConnect) {
+        autoConnect = setInterval(async () => {
+          await main();
+        }, 15000);
+      }
     });
+
     connection.on("message", (message) => {
       if (message.type === "utf8") {
         console.log(`Received response : ${message.utf8Data}`);
@@ -257,7 +270,7 @@ const main = async () => {
           const uniqueId = data[1];
           const payload = data[2];
           const action = pendingRequests[uniqueId];
-        //  console.log(action);
+          //  console.log(action);
           delete pendingRequests[uniqueId];
           handleResponse(connection, action, payload);
         } else if (messageType === 4) {
@@ -277,27 +290,27 @@ const main = async () => {
     BootNotification_payload = await BootNotificationPayload();
     sendOCPPMsg(connection, "BootNotification", BootNotification_payload);
     StatusNotification_payload = await StatusNotificationPayload();
-    var pingHeartbeat = setInterval(() => {
-      var timeNow = new Date();
-      (async () => {
-        try {
-          const row = await readData(
-            `SELECT lastOnline FROM ocpp WHERE id = ?`,
-            [1]
-          );
-          const valueArray = Object.values(row);
-          const lastOnline = new Date(valueArray).getTime();
-          console.log(timeNow.getTime() - lastOnline);
-          if (timeNow.getTime() - lastOnline > interval * 1000) {
-            console.log("Disconnected");
-          } else {
-            console.log("Connected");
-          }
-        } catch (err) {
-          console.error("Error reading data:", err);
-        }
-      })();
-    }, 10000);
+    // var pingHeartbeat = setInterval(() => {
+    //   var timeNow = new Date();
+    //   (async () => {
+    //     try {
+    //       const row = await readData(
+    //         `SELECT lastOnline FROM ocpp WHERE id = ?`,
+    //         [1]
+    //       );
+    //       const valueArray = Object.values(row);
+    //       const lastOnline = new Date(valueArray).getTime();
+    //       console.log(timeNow.getTime() - lastOnline);
+    //       if (timeNow.getTime() - lastOnline > interval * 1000) {
+    //         console.log("Disconnected");
+    //       } else {
+    //         console.log("Connected");
+    //       }
+    //     } catch (err) {
+    //       console.error("Error reading data:", err);
+    //     }
+    //   })();
+    // }, 10000);
   } catch (err) {
     console.log(err);
   }
