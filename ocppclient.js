@@ -154,7 +154,7 @@ const handleResponse = (connection, action, payload) => {
     case "ChangeConfiguration":
       const key = payload[2].key;
       const value = payload[2].value;
-      console.log(`key : ${key}, value : ${value}`);
+      // console.log(`key : ${key}, value : ${value}`);
 
       const sql = `
   UPDATE configuration
@@ -224,6 +224,24 @@ const handleResponse = (connection, action, payload) => {
       );
 
       break;
+    case "Reset":
+      var msg = [];
+
+      if (payload[2].type == "Soft") {
+        msg = [payload[0], payload[1], { status: "Accepted" }];
+        setTimeout(async () => {
+          await main();
+        }, 5000);
+      }
+      if (payload[2].type == "Hard") {
+        msg = [payload[0], payload[1], { status: "Accepted" }];
+        setTimeout(async () => {
+          await main();
+        }, 5000);
+      }
+      connection.sendUTF(JSON.stringify(msg));
+
+      break;
     default:
       break;
   }
@@ -238,11 +256,11 @@ const main = async () => {
     const connection = await connectWS(row.url, row.chargerid, protocol);
     console.log("Connected to websocket");
 
-     if (autoConnect) {
+    if (autoConnect) {
       clearInterval(autoConnect);
       autoConnect = null;
     }
-   
+
     connection.on("error", (error) => {
       console.error("Connection error:", error);
     });
