@@ -30,6 +30,7 @@ async function loaddata() {
     console.error(error.message);
   }
 }
+
 async function loadocpp() {
   const url = `${hostname}/ocpp/loaddata`;
   try {
@@ -46,6 +47,154 @@ async function loadocpp() {
     }
   } catch (error) {
     console.error(error.message);
+  }
+}
+async function loadToken() {
+  const url = `${hostname}/charger/loadtoken`;
+  try {
+    const response = await fetch(url);
+    if (response.status === 200) {
+      return await response.json(); // return array of tokens
+    }
+    return [];
+  } catch (err) {
+    console.error("Error loading tokens:", err);
+    return [];
+  }
+}
+
+async function getNumGun() {
+  const url = `${hostname}/ocpp/loaddata`;
+
+  try {
+    const response = await fetch(url);
+    if (response.status === 200) {
+      const result = await response.json();
+      localStorage.setItem("numGun", result.numgun);
+      let divChargerGuns = document.getElementById("divChargerGuns");
+      let chargingIntervals = {};
+      for (let j = 1; j <= result.numgun; j++) {
+        //save status charging in localStorage
+        localStorage.setItem(`statusCharging${j}`, "idle");
+        //Gun title
+        //----------------------------------------------------------------------------
+        let gunLabelElement = document.createElement("label");
+        gunLabelElement.innerText = `Gun -  ${j}`;
+        gunLabelElement.classList.add("gunlabel");
+
+        //Token UI
+        //----------------------------------------------------------------------------
+        let tokenInputElement = document.createElement("input");
+        tokenInputElement.classList.add("tokeninput");
+        tokenInputElement.setAttribute("id", `tokenInputElement${j}`);
+
+        let tokenSelectElement = document.createElement("select");
+        tokenSelectElement.classList.add("tokenselect");
+        tokenSelectElement.setAttribute("id", `tokenSelectElement${j}`);
+        let saveTokenButton = document.createElement("button");
+        saveTokenButton.innerText = "Save";
+        saveTokenButton.classList.add("savetokenbutton");
+        saveTokenButton.setAttribute("id", `saveTokenButton${j}`);
+
+        let tapTokenButton = document.createElement("button");
+        tapTokenButton.innerText = "Tap";
+        tapTokenButton.classList.add("taptokenbutton");
+        tapTokenButton.setAttribute("id", `tapTokenButton${j}`);
+
+        let divTokenUI = document.createElement("div");
+        divTokenUI.classList.add("divtokenui");
+        let statusLabel = document.createElement("label");
+        statusLabel.innerText = "Charging status :";
+        statusLabel.classList.add("statuslabel");
+        divTokenUI.append(tokenInputElement);
+        divTokenUI.append(tokenSelectElement);
+
+        const resToken = await loadToken();
+        resToken.forEach((item) => {
+          const option = document.createElement("option");
+          option.value = item.token;
+          option.text = item.token;
+          tokenSelectElement.appendChild(option);
+        });
+
+        tokenSelectElement.addEventListener("change", (event) => {
+          const selectedToken = event.target.value; // the chosen option
+          document.getElementById(`tokenInputElement${j}`).value =
+            selectedToken;
+        });
+
+        divTokenUI.append(saveTokenButton);
+        divTokenUI.append(tapTokenButton);
+        //----------------------------------------------------------------------------
+        //progress bar
+        let divProgressBar = document.createElement("div");
+        divProgressBar.classList.add("divprogressbar");
+        let divFrameProgressBar = document.createElement("div");
+        divFrameProgressBar.classList.add("divframeprogressbar");
+        divFrameProgressBar.setAttribute("id", `divFrameProgressBar${j}`);
+        divProgressBar.append(divFrameProgressBar);
+
+        saveTokenButton.addEventListener("click", async (event) => {
+          let gun = event.target.id.slice(
+            "saveTokenButton".length,
+            event.target.id.length
+          );
+          let token = document.getElementById(`tokenInputElement${gun}`).value;
+          console.log(token);
+          await saveToken(token);
+        });
+        tapTokenButton.addEventListener("click", (event) => {
+          let gun = event.target.id.slice(
+            "tapTokenButton".length,
+            event.target.id.length
+          );
+          let elem = document.getElementById(`divFrameProgressBar${gun}`);
+          let width = 0;
+          let timeUpdate = 2000; //2secs
+
+          if (localStorage.getItem(`statusCharging${gun}`) == "idle") {
+            chargingIntervals[gun] = setInterval(frame, timeUpdate);
+            function frame() {
+              if (width >= 100) {
+                clearInterval(chargingIntervals[gun]);
+              } else {
+                width += 5;
+                elem.style.width = width + "%";
+                elem.innerHTML = width + "%";
+                elem.dataset.width = width;
+              }
+            }
+
+            localStorage.setItem(`statusCharging${gun}`, "charging");
+          } else if (
+            localStorage.getItem(`statusCharging${gun}`) == "charging"
+          ) {
+            clearInterval(chargingIntervals[gun]);
+            width = 0;
+            elem.style.width = width + "%";
+            elem.innerHTML = width + "%";
+            elem.dataset.width = width;
+            localStorage.setItem(`statusCharging${gun}`, "idle");
+          }
+        });
+
+        //--------------------------------------------------------------------------
+        let divSubChargerGuns = document.createElement("div");
+        divSubChargerGuns.classList.add("divsubchargerguns");
+        divSubChargerGuns.append(gunLabelElement);
+        divSubChargerGuns.append(divTokenUI);
+        divSubChargerGuns.append(statusLabel);
+        divSubChargerGuns.append(divProgressBar);
+
+        divChargerGuns.append(divSubChargerGuns);
+      }
+    } else if (response.status === 404) {
+      alert("Data not found");
+    } else if (response.status === 500) {
+      alert("Database query failed");
+    }
+  } catch (error) {
+    console.log(error.message);
   }
 }
 async function savedata() {
@@ -196,6 +345,30 @@ async function ReadConfiguration() {
     }
   } catch (error) {
     console.error(error.message);
+  }
+}
+
+async function saveToken(token) {
+  const url = `${hostname}/charger/token`;
+  const data = {
+    token: token,
+  };
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams(data),
+    });
+    if (response.status === 200) {
+      alert("Success");
+    }
+    if (response.status === 500) {
+      alert("Fail");
+    }
+  } catch (err) {
+    console.log(err);
   }
 }
 //updatestatussw();

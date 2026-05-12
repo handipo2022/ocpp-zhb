@@ -29,9 +29,26 @@ const insert = (db, sql, data) => {
     }
   });
 };
-//read data from table
+//read all data from table
+// read: (db, sql, params, callback) => {
+//   db.all(sql, params, (err, rows) => {
+//     callback(err, rows);
+//   });
+// }
+//read one data row from table
 const read = (db, sql, params, callback) => {
   db.get(sql, params, (err, row) => {
+    if (err) {
+      console.error(err);
+      callback(err, null);
+    } else {
+      callback(null, row);
+    }
+  });
+};
+//read one data row from table
+const readAll = (db, sql, callback) => {
+  db.all(sql, (err, row) => {
     if (err) {
       console.error(err);
       callback(err, null);
@@ -51,4 +68,4 @@ const run = (db, sql, params = []) => {
 };
 
 
-module.exports = { connect, create, insert,read,run };
+module.exports = { connect, create, insert,read,run,readAll };

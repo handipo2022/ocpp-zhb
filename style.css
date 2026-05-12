@@ -85,3 +85,76 @@ select {
   color: white; /* keep text readable */
   border-radius: 0.25rem; /* optional: rounded corners */
 }
+
+.divchargerguns {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.divsubchargerguns {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: solid 2px gray;
+  border-radius:8px;
+  margin: 2px;
+  
+}
+.gunlabel {
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  text-align: center;
+}
+.tokeninput,.tokenselect {
+  width: 120px;
+  height: 30px;
+  background-color: white;
+  color: black;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 2px;
+}
+.savetokenbutton,
+.taptokenbutton {
+  width: fit-content;
+  height: auto;
+  font-size: 20px;
+  background-color: bisque;
+  color: black;
+  text-align: center;
+  margin: 2px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.divtokenui {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+/*  border: solid 1px yellow;*/
+}
+.statuslabel {
+  font-size: 12px;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+.divprogressbar {
+  width: 50%;
+  background-color: #eee;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.divframeprogressbar {
+  width: 0%;
+  height: 30px;
+  background-color: #4caf50;
+  text-align: center;
+  line-height: 30px;
+  color: white;
+  transition: width 0.3s;
+}

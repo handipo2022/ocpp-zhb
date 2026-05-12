@@ -231,13 +231,13 @@ const handleResponse = (connection, action, payload) => {
         msg = [payload[0], payload[1], { status: "Accepted" }];
         setTimeout(async () => {
           await main();
-        }, 5000);
+        }, 10000);
       }
       if (payload[2].type == "Hard") {
         msg = [payload[0], payload[1], { status: "Accepted" }];
         setTimeout(async () => {
           await main();
-        }, 5000);
+        }, 10000);
       }
       connection.sendUTF(JSON.stringify(msg));
 

@@ -1,6 +1,7 @@
 const express = require("express");
 const dbase = require("./dbclient.js");
-const ocppClient = require("./ocppclient.js");
+//const ocppClient = require("./ocppclient.js");
+const rpcClient = require("./ocpp-rpc.js");
 
 const app = express();
 const port = 3000;
@@ -33,6 +34,11 @@ const connector = `CREATE TABLE IF NOT EXISTS connector (
       connectorId INTEGER,
       status TEXT,
       errorCode TEXT      
+    )`;
+
+const token = `CREATE TABLE IF NOT EXISTS token (     
+      id INTEGER PRIMARY KEY,
+      token TEXT      
     )`;
 
 const configuration = `CREATE TABLE IF NOT EXISTS configuration (
@@ -87,9 +93,9 @@ dbase.create(db, chargerdata); //create table 'chargerdata'
 dbase.create(db, ocpp); //create table 'ocpp'
 dbase.create(db, connector); //create table 'connector'
 dbase.create(db, configuration); //create table 'configuration'
-
-ocppClient.main();
-
+dbase.create(db, token); //create table 'token'
+//ocppClient.main();
+rpcClient.connectAndBoot();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -177,6 +183,44 @@ app.post("/detailcp/savedata", async (req, res) => {
       metertype,
     ];
 
+    dbase.insert(db, sql, values);
+    res.status(200).send();
+  } catch (err) {
+    console.log(err);
+    res.status(500).send();
+  }
+});
+
+app.get("/charger/loadtoken",async(req,res)=>{
+  try{
+    const sql ="select * from token";
+    dbase.readAll(db,sql,(err,row)=>{
+      if(err){
+        console.log(err);
+        return res.status(404);
+      }
+      else{
+        console.log(row);
+        return res.status(200).json(row);
+      } 
+
+    })
+  }
+  catch(err){
+    console.log(err);
+  }
+})
+app.post("/charger/token", async (req, res) => {
+  const { token } = req.body;
+  console.log(token);
+  try {
+    const sql = `
+    INSERT OR REPLACE INTO token (
+      token
+      
+    ) VALUES (?)
+  `;
+    const values = [token];
     dbase.insert(db, sql, values);
     res.status(200).send();
   } catch (err) {
